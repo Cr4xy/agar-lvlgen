@@ -180,7 +180,7 @@ setInterval(function() {
 if (config.reset > 0) {
 	setTimeout(function() {
 		process.exit();
-	}, config.reset * 1000);
+	}, config.reset * 1000 * 60);
 }
 
 setInterval(function() {
