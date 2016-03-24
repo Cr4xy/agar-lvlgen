@@ -1,15 +1,14 @@
 // Made by Cr4xy - Helped by MastaCoder :)
 // https://www.youtube.com/channel/UC1CJCNc6rrtjJzxiqYN97aQ - Support Cr4xy's YouTube!
-
 var agarClient = require("agario-client")
-	config = require("./config.js"),
-	token = null,
-	account = new agarClient.Account(),
-	STATIC_NAME = config.name,
-	debugObj = {},
-	regions = config.regions,
-	DefaultAi = new (require("./ai/default_ai.js")),
-	AposAi = new (require("./ai/apos_ai.js"));
+config = require("./config.js"),
+    token = null,
+    account = new agarClient.Account(),
+    STATIC_NAME = config.name,
+    debugObj = {},
+    regions = config.regions,
+    DefaultAi = new(require("./ai/default_ai.js")),
+    AposAi = new(require("./ai/apos_ai.js"));
 
 var VERSION = 0.93;
 
@@ -20,181 +19,187 @@ var regionCounter = 0; // Give number to each region.
 var requestTries = 0; // Requests to get the server tokens.
 
 Array.prototype.contains = function(element) {
-	return this.indexOf(element) >= 0;
+    return this.indexOf(element) >= 0;
 }
 Array.prototype.add = Array.prototype.push;
 Array.prototype.remove = function(element) {
-	if (this.contains(element)) this.splice(this.indexOf(element), 1);
+    if (this.contains(element)) this.splice(this.indexOf(element), 1);
 }
 
 // Check if no region is enabled
-!function() {
-	if (config.regions.length > 0) return;
-	console.log("No region enabled or found. oh well");
-	process.exit();
+! function() {
+    if (config.regions.length > 0) return;
+    console.log("No region enabled or found. oh well");
+    process.exit();
 }();
 
 // Check for updates
-!function() {
-	require("https").get('https://raw.githubusercontent.com/Cr4xy/agar-lvlgen/master/version', (res) => {
-		res.on('data', function (bytes) {
-			var fetched_version = bytes.toString();
+! function() {
+    require("https").get('https://raw.githubusercontent.com/Cr4xy/agar-lvlgen/master/version', (res) => {
+        res.on('data', function(bytes) {
+            var fetched_version = bytes.toString();
 
-			console.log("\u001B[31m\n########################");
-			console.log("\u001B[32m    _                         _         _  ____");
-			console.log("   / \\   __ _  __ _ _ __     | | __   _| |/ ___| ___ _ __");
-			console.log("  / _ \\ / _` |/ _` | '__|____| | \\ \\ / / | |  _ / _ \\ '_ \\ ");
-			console.log(" / ___ \\ (_| | (_| | | |_____| |__\\ V /| | |_| |  __/ | | |");
-			console.log("/_/   \\_\\__, |\\__,_|_|       |_____\\_/ |_|\\____|\\___|_| |_|");
-        	console.log("	|___/ \u001B[33m- Open Source Agar.io Level Farming! \u001B[0m \n");
-			
-			if (!isNaN(fetched_version) && isFinite(fetched_version)) {
-				if (VERSION < fetched_version) {
-					console.log("Running version: " + VERSION + " (New version " + fetched_version + " found, download off agar-lvlgen Github repo)");
-				} else {
-					console.log("Running version: " + VERSION + " (Latest)");
-				}
-			} else {
-				console.log("Running version: " + VERSION + " (Failed to fetch)");
-			}
+            console.log("\u001B[31m\n########################");
+            console.log("\u001B[32m    _                         _         _  ____");
+            console.log("   / \\   __ _  __ _ _ __     | | __   _| |/ ___| ___ _ __");
+            console.log("  / _ \\ / _` |/ _` | '__|____| | \\ \\ / / | |  _ / _ \\ '_ \\ ");
+            console.log(" / ___ \\ (_| | (_| | | |_____| |__\\ V /| | |_| |  __/ | | |");
+            console.log("/_/   \\_\\__, |\\__,_|_|       |_____\\_/ |_|\\____|\\___|_| |_|");
+            console.log("	|___/ \u001B[33m- Open Source Agar.io Level Farming! \u001B[0m \n");
 
-			console.log("Will reset in: " + config.reset + " minutes")
+            if (!isNaN(fetched_version) && isFinite(fetched_version)) {
+                if (VERSION < fetched_version) {
+                    console.log("Running version: " + VERSION + " (New version " + fetched_version + " found, download off agar-lvlgen Github repo)");
+                } else {
+                    console.log("Running version: " + VERSION + " (Latest)");
+                }
+            } else {
+                console.log("Running version: " + VERSION + " (Failed to fetch)");
+            }
 
-			console.log("\n\u001B[31m########################\u001B[0m\n");
-		});
-	});
+            console.log("Will reset in: " + config.reset + " minutes")
+
+            console.log("\n\u001B[31m########################\u001B[0m\n");
+        });
+    });
 }();
 
 function getRegion() {
-	regionCounter++;
-	if (regionCounter >= regions.length) regionCounter = 0;
-	return regions[regionCounter];
+    regionCounter++;
+    if (regionCounter >= regions.length) regionCounter = 0;
+    return regions[regionCounter];
 }
 
 function getServerOptions() {
-	return {region: getRegion()};
+    return {
+        region: getRegion()
+    };
 }
 
 function requestToken(c_user, datr, xs) {
-	account.c_user = c_user || config.accounts[accountIndex].c_user;
-	account.datr = datr || config.accounts[accountIndex].datr;
-	account.xs = xs || config.accounts[accountIndex].xs;
-	
-	account.requestFBToken(function(token, info) {
-		if (!token) {
-			if (requestTries++ >= 5) {
-				accountCount++;
-				console.log("[Account " + accountCount + "] Token Failed: Token failed after multiple tries.");
-				process.exit();
-			}
-			console.log("[Account " + accountCount + "] Token Failed: Token failed after " + requestTries + " tries, will try again.");
-			requestToken();
-		} else {
-			accountCount++;
-			if (config.showtoken == true) {
-				console.log("[Account " + accountCount + "] Token Success: ", token);
-			} else {
-				console.log("[Account " + accountCount + "] Token Success: Token Hidden!");
-			}
-			agarClient.servers.getFFAServer(getServerOptions(), function(e) {
-				var server = e.server;
-				var key = e.key;
-				start(server, key, token, account);
-			});
-			requestTries = 0;
-		}
-	});
+    account.c_user = c_user || config.accounts[accountIndex].c_user;
+    account.datr = datr || config.accounts[accountIndex].datr;
+    account.xs = xs || config.accounts[accountIndex].xs;
+
+    account.requestFBToken(function(token, info) {
+        if (!token) {
+            if (requestTries++ >= 5) {
+                accountCount++;
+                console.log("[Account " + accountCount + "] Token Failed: Token failed after multiple tries.");
+                process.exit();
+            }
+            console.log("[Account " + accountCount + "] Token Failed: Token failed after " + requestTries + " tries, will try again.");
+            requestToken();
+        } else {
+            accountCount++;
+            if (config.showtoken == true) {
+                console.log("[Account " + accountCount + "] Token Success: ", token);
+            } else {
+                console.log("[Account " + accountCount + "] Token Success: Token Hidden!");
+            }
+            agarClient.servers.getFFAServer(getServerOptions(), function(e) {
+                var server = e.server;
+                var key = e.key;
+                start(server, key, token, account);
+            });
+            requestTries = 0;
+        }
+    });
 }
 
 // Get token & server, then start
-!function getTokenAndServer() {
-	setTimeout(function() {
-		requestToken();
-	}, 500);
-	accountIndex++;
-	if (accountIndex >= config.accounts.length) {
-		accountIndex = 0;
-		return;
-	}
-	getTokenAndServer();
+! function getTokenAndServer() {
+    setTimeout(function() {
+        requestToken();
+    }, 500);
+    accountIndex++;
+    if (accountIndex >= config.accounts.length) {
+        accountIndex = 0;
+        return;
+    }
+    getTokenAndServer();
 }();
 
 var clientIdCounter = 0;
 var bots = [];
 
 function start(server, key, token, acc) {
-	var myClient = new agarClient("Client_" + clientIdCounter++);
-	myClient.debug = 0;
-	myClient.auth_token = token;
-	var myBotObj = {spawned: false, client: myClient, account: acc};
-	myClient.on('disconnect', function() {
-		bots.remove(myBotObj);
-		clearInterval(myClient.sendInterval);
-		myClient = null;
-	});
-	myClient.on('packetError', function(packet, error, preventCrash) {
-		preventCrash();
-	});
-	myClient.on('connected', function() {
-		bots.add(myBotObj);
-		myClient.spawn(STATIC_NAME);
-		myClient.sendInterval = setInterval(function() {
-			if (config.ai == "default") {				
-				DefaultAi.update(myClient);
-			} else {
-				if (myClient.my_balls.length == 0) return;
-				var myBalls = [];
-				for (var i in myClient.my_balls) myClient.balls[myClient.my_balls[i]] && (myBalls.push(myClient.balls[myClient.my_balls[i]]));
-				AposAi.setPlayer(myBalls);
-				AposAi.setMemoryCells(myClient.balls);
-				var destination = AposAi.mainLoop(myClient.balls);
-				//console.log(destination);
-				myClient.moveTo(destination[0], destination[1]);
-			}
-		}, 40);
-	});
-	myClient.on('myNewBall', function() {
-		myBotObj.spawned = true;
-	});
-	myClient.on('lostMyBalls', function() {
-		myBotObj.spawned = false;
-		myClient.spawn(STATIC_NAME);
-	});
-	myClient.connect("ws://" + server, key);
+    var myClient = new agarClient("Client_" + clientIdCounter++);
+    myClient.debug = 0;
+    myClient.auth_token = token;
+    var myBotObj = {
+        spawned: false,
+        client: myClient,
+        account: acc
+    };
+    myClient.on('disconnect', function() {
+        bots.remove(myBotObj);
+        clearInterval(myClient.sendInterval);
+        myClient = null;
+    });
+    myClient.on('packetError', function(packet, error, preventCrash) {
+        preventCrash();
+    });
+    myClient.on('connected', function() {
+        bots.add(myBotObj);
+        myClient.spawn(STATIC_NAME);
+        myClient.sendInterval = setInterval(function() {
+            if (config.ai == "default") {
+                DefaultAi.update(myClient);
+            } else {
+                if (myClient.my_balls.length == 0) return;
+                var myBalls = [];
+                for (var i in myClient.my_balls) myClient.balls[myClient.my_balls[i]] && (myBalls.push(myClient.balls[myClient.my_balls[i]]));
+                AposAi.setPlayer(myBalls);
+                AposAi.setMemoryCells(myClient.balls);
+                var destination = AposAi.mainLoop(myClient.balls);
+                //console.log(destination);
+                myClient.moveTo(destination[0], destination[1]);
+            }
+        }, 40);
+    });
+    myClient.on('myNewBall', function() {
+        myBotObj.spawned = true;
+    });
+    myClient.on('lostMyBalls', function() {
+        myBotObj.spawned = false;
+        myClient.spawn(STATIC_NAME);
+    });
+    myClient.connect("ws://" + server, key);
 }
 
 setInterval(function() {
-	for (var i = 0; i < bots.length; i++) {
-		var acc = bots[i].account;
-		if (Date.now() > acc.token_expire) {
-			requestToken(acc.c_user, acc.datr, acc.xs)
-			bots.remove(bots[i]);
-		}
-	}
+    for (var i = 0; i < bots.length; i++) {
+        var acc = bots[i].account;
+        if (Date.now() > acc.token_expire) {
+            requestToken(acc.c_user, acc.datr, acc.xs)
+            bots.remove(bots[i]);
+        }
+    }
 }, 10000);
 
 setInterval(function() {
-	currentSeconds++;
+    currentSeconds++;
 }, 1000);
 
 if (config.reset > 0) {
-	setTimeout(function() {
-		process.exit();
-	}, config.reset * 1000);
+    setTimeout(function() {
+        process.exit();
+    }, config.reset * 1000 * 60);
 }
 
 setInterval(function() {
-	var totalScore = 0;
-	var spawnedCount = 0;
-	var highestScore = 0;
-	for (var i = 0; i < bots.length; i++) bots[i].spawned && (spawnedCount++, totalScore += bots[i].client.score, highestScore = Math.max(highestScore, bots[i].client.score));
-	var avgScore = parseInt((totalScore / Math.max(1, spawnedCount)).toFixed(0));
-	debugObj.connected = bots.length;
-	debugObj.spawned = spawnedCount;
-	debugObj.totalScore = totalScore;
-	debugObj.avgScore = avgScore;
-	debugObj.highest = highestScore;
-	debugObj.time = currentSeconds;
-	console.log(" ");
-	console.log(debugObj);
+    var totalScore = 0;
+    var spawnedCount = 0;
+    var highestScore = 0;
+    for (var i = 0; i < bots.length; i++) bots[i].spawned && (spawnedCount++, totalScore += bots[i].client.score, highestScore = Math.max(highestScore, bots[i].client.score));
+    var avgScore = parseInt((totalScore / Math.max(1, spawnedCount)).toFixed(0));
+    debugObj.connected = bots.length;
+    debugObj.spawned = spawnedCount;
+    debugObj.totalScore = totalScore;
+    debugObj.avgScore = avgScore;
+    debugObj.highest = highestScore;
+    debugObj.time = currentSeconds;
+    console.log(" ");
+    console.log(debugObj);
 }, config.statusDelay);
