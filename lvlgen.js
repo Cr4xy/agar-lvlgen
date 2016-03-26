@@ -11,13 +11,14 @@ var agarClient = require("agario-client")
 	DefaultAi = new (require("./ai/default_ai.js")),
 	AposAi = new (require("./ai/apos_ai.js"));
 
-var VERSION = 0.93;
+var VERSION = 0.94;
 
 var currentSeconds = 0; // Starts at 0
 var accountIndex = 0; // Gives number to each token and account.
 var accountCount = 0; // Gives number of attempted accounts.
 var regionCounter = 0; // Give number to each region.
 var requestTries = 0; // Requests to get the server tokens.
+var consoleFix = false; // Adds spaces to remove extra numbers.
 
 Array.prototype.contains = function(element) {
 	return this.indexOf(element) >= 0;
@@ -46,7 +47,7 @@ Array.prototype.remove = function(element) {
 			console.log("  / _ \\ / _` |/ _` | '__|____| | \\ \\ / / | |  _ / _ \\ '_ \\ ");
 			console.log(" / ___ \\ (_| | (_| | | |_____| |__\\ V /| | |_| |  __/ | | |");
 			console.log("/_/   \\_\\__, |\\__,_|_|       |_____\\_/ |_|\\____|\\___|_| |_|");
-        	console.log("	|___/ \u001B[33m- Open Source Agar.io Level Farming! \u001B[0m \n");
+        	console.log("	|___/ \u001B[33m- Open Source Agar.io Level Farming! \u001B[0m\n");
 			
 			if (!isNaN(fetched_version) && isFinite(fetched_version)) {
 				if (VERSION < fetched_version) {
@@ -84,17 +85,17 @@ function requestToken(c_user, datr, xs) {
 		if (!token) {
 			if (requestTries++ >= 5) {
 				accountCount++;
-				console.log("[Account " + accountCount + "] Token Failed: Token failed after multiple tries.");
+				console.log("[ac" + accountCount + "] Token Failed: Token failed after multiple tries.");
 				process.exit();
 			}
-			console.log("[Account " + accountCount + "] Token Failed: Token failed after " + requestTries + " tries, will try again.");
+			console.log("[ac" + accountCount + "] Token Failed: Token failed after " + requestTries + " tries, will try again.");
 			requestToken();
 		} else {
 			accountCount++;
 			if (config.showtoken) {
-				console.log("[Account " + accountCount + "] Token Success: ", token);
+				console.log("[ac" + accountCount + "] Token Success: ", token);
 			} else {
-				console.log("[Account " + accountCount + "] Token Success: Token Hidden!");
+				console.log("[ac" + accountCount + "] Token Success: Token Hidden!");
 			}
 			agarClient.servers.getFFAServer(getServerOptions(), function(e) {
 				var server = e.server;
@@ -183,6 +184,19 @@ if (config.reset > 0) {
 	}, config.reset * 1000 * 60);
 }
 
+setTimeout(function() {
+	console.log(" ");
+	// Live console developed by MastaCoder!
+	if (config.liveConsole == true) {
+		console.log("\u001B[33mLive Console: \u001B[0m");
+		console.log("------------------------------------------------------------------")
+	}
+}, config.statusDelay - 0.001);
+
+setInterval(function() {
+	consoleFix = true;
+}, 10000);
+
 setInterval(function() {
 	var totalScore = 0;
 	var spawnedCount = 0;
@@ -195,6 +209,17 @@ setInterval(function() {
 	debugObj.avgScore = avgScore;
 	debugObj.highest = highestScore;
 	debugObj.time = currentSeconds;
-	console.log(" ");
-	console.log(debugObj);
+
+	// Live console developed by MastaCoder!
+	if (config.liveConsole == true) {
+		if (consoleFix != true) {
+			process.stdout.write("\rSpawned: " + spawnedCount + " | Total: " + totalScore + " | Average: " + avgScore + " | Highest: " + highestScore + " | Time: " + currentSeconds);
+		} else {
+			process.stdout.write("\rSpawned: " + spawnedCount + " | Total: " + totalScore + " | Average: " + avgScore + " | Highest: " + highestScore + " | Time: " + currentSeconds + "    ");
+			consoleFix = false;
+		}
+	} else {
+		console.log(debugObj);
+	}
+
 }, config.statusDelay);
