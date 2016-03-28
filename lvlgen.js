@@ -18,7 +18,6 @@ var accountIndex = 0; // Gives number to each token and account.
 var accountCount = 0; // Gives number of attempted accounts.
 var regionCounter = 0; // Give number to each region.
 var requestTries = 0; // Requests to get the server tokens.
-var consoleFix = false; // Adds spaces to remove extra numbers.
 
 Array.prototype.contains = function(element) {
 	return this.indexOf(element) >= 0;
@@ -194,15 +193,11 @@ setInterval(function() {
 setTimeout(function() {
 	console.log(" ");
 	// Live console developed by MastaCoder!
-	if (config.liveConsole == true) {
+	if (config.liveConsole) {
 		console.log("\u001B[33mLive Console: \u001B[0m");
 		console.log("---------------------------------------------------------------------")
 	}
 }, config.statusDelay - 0.001);
-
-setInterval(function() {
-	consoleFix = true;
-}, 10000);
 
 setInterval(function() {
 	var totalScore = 0;
@@ -218,16 +213,11 @@ setInterval(function() {
 	debugObj.highest = highestScore;
 	debugObj.time = currentSeconds;
 
-	// Live console developed by MastaCoder!
-	if (config.liveConsole == true) {
-		if (consoleFix != true) {
-			process.stdout.write("\rSpawned: " + spawnedCount + " | Total: " + totalScore + " | Average: " + avgScore + " | Highest: " + highestScore + " | Time: " + currentSeconds);
-		} else {
-			process.stdout.write("\rSpawned: " + spawnedCount + " | Total: " + totalScore + " | Average: " + avgScore + " | Highest: " + highestScore + " | Time: " + currentSeconds + "    ");
-			consoleFix = false;
-		}
-	} else {
-		console.log(debugObj);
-	}
+	// Live console developed by MastaCoder! (simplified by SALVATION)
+    if (config.liveConsole == true) {
+        process.stdout.write("\033[K\rSpawned: " + spawnedCount + " | Total: " + totalScore + " | Average: " + avgScore + " | Highest: " + highestScore + " | Time: " + currentSeconds);
+    } else {
+        console.log(debugObj);
+    }
 
 }, config.statusDelay);
