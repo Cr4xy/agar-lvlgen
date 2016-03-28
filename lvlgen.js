@@ -11,14 +11,15 @@ var agarClient = require("agario-client")
 	DefaultAi = new (require("./ai/default_ai.js")),
 	AposAi = new (require("./ai/apos_ai.js"));
 
-var VERSION = 0.95;
+var VERSION = 0.96;
 
 var currentSeconds = 0; // Starts at 0
 var accountIndex = 0; // Gives number to each token and account.
 var accountCount = 0; // Gives number of attempted accounts.
 var regionCounter = 0; // Give number to each region.
 var requestTries = 0; // Requests to get the server tokens.
-var consoleFix = false; // Adds spaces to remove extra numbers.
+var fs = require('fs');
+
 
 Array.prototype.contains = function(element) {
 	return this.indexOf(element) >= 0;
@@ -40,6 +41,9 @@ Array.prototype.remove = function(element) {
 	require("https").get('https://raw.githubusercontent.com/Cr4xy/agar-lvlgen/master/version', function(res) {
 		res.on('data', function (bytes) {
 			var fetched_version = bytes.toString();
+			if (config.logging ==true){
+			fs.appendFileSync('log.txt', new Date() +' | *** AGAR-LVLGEN STARTED *** \r', encoding='utf8');
+			}
 
 			console.log("\u001B[31m\n########################");
 			console.log("\u001B[32m    _                         _         _  ____");
@@ -89,6 +93,9 @@ function requestToken(c_user, datr, xs) {
 				process.exit();
 			}
 			console.log("[ac" + accountCount + "] Token Failed: Token failed after " + requestTries + " tries, will try again.");
+			if (config.logging ==true){
+			fs.appendFileSync('log.txt', new Date() +' | *** FB TOKEN FAILED *** \r', encoding='utf8');
+			}
 			requestToken();
 		} else {
 			accountCount++;
@@ -102,6 +109,9 @@ function requestToken(c_user, datr, xs) {
 				var key = e.key;
 				start(server, key, token, account);
 			});
+			if (config.logging ==true){
+			fs.appendFileSync('log.txt', new Date() +' | *** FB TOKEN ACCEPTED *** \r', encoding='utf8');
+			}
 			requestTries = 0;
 		}
 	});
@@ -187,6 +197,9 @@ setInterval(function() {
         var inSeconds = config.reset * 60;
         if (currentSeconds >= inSeconds && avgScore < 100) {
             process.exit();
+						if (config.logging ==true){
+						fs.appendFileSync('log.txt', new Date() +' | *** PROGRAM RESET *** \r', encoding='utf8');
+						}
         }
     }
 }, 1000);
@@ -194,15 +207,11 @@ setInterval(function() {
 setTimeout(function() {
 	console.log(" ");
 	// Live console developed by MastaCoder!
-	if (config.liveConsole == true) {
+	if (config.liveConsole) {
 		console.log("\u001B[33mLive Console: \u001B[0m");
 		console.log("---------------------------------------------------------------------")
 	}
 }, config.statusDelay - 0.001);
-
-setInterval(function() {
-	consoleFix = true;
-}, 10000);
 
 setInterval(function() {
 	var totalScore = 0;
@@ -218,16 +227,18 @@ setInterval(function() {
 	debugObj.highest = highestScore;
 	debugObj.time = currentSeconds;
 
-	// Live console developed by MastaCoder!
-	if (config.liveConsole == true) {
-		if (consoleFix != true) {
-			process.stdout.write("\rSpawned: " + spawnedCount + " | Total: " + totalScore + " | Average: " + avgScore + " | Highest: " + highestScore + " | Time: " + currentSeconds);
-		} else {
-			process.stdout.write("\rSpawned: " + spawnedCount + " | Total: " + totalScore + " | Average: " + avgScore + " | Highest: " + highestScore + " | Time: " + currentSeconds + "    ");
-			consoleFix = false;
+	// Live console developed by MastaCoder! (simplified by SALVATION)
+    if (config.liveConsole == true) {
+        process.stdout.write("\033[K\rSpawned: " + spawnedCount + " | Total: " + totalScore + " | Average: " + avgScore + " | Highest: " + highestScore + " | Time: " + currentSeconds);
+		if (config.logging ==true){
+		if (highestScore > 500){
+			fs.appendFileSync('log.txt', new Date() +' | *** HIGHEST SCORE ABOVE 500 *** \r', encoding='utf8');
 		}
-	} else {
-		console.log(debugObj);
-	}
+			}
+
+		
+    } else {
+        console.log(debugObj);
+    }
 
 }, config.statusDelay);
