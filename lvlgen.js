@@ -11,7 +11,7 @@ var agarClient = require("agario-client")
 	DefaultAi = new (require("./ai/default_ai.js")),
 	AposAi = new (require("./ai/apos_ai.js"));
 
-var VERSION = 0.95;
+var VERSION = 0.96;
 
 var currentSeconds = 0; // Starts at 0
 var accountIndex = 0; // Gives number to each token and account.
