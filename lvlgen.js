@@ -194,7 +194,7 @@ setInterval(function() {
 setTimeout(function() {
 	console.log(" ");
 	// Live console developed by MastaCoder!
-	if (config.liveConsole == true) {
+	if (config.liveConsole) {
 		console.log("\u001B[33mLive Console: \u001B[0m");
 		console.log("---------------------------------------------------------------------")
 	}
@@ -219,7 +219,7 @@ setInterval(function() {
 	debugObj.time = currentSeconds;
 
 	// Live console developed by MastaCoder!
-	if (config.liveConsole == true) {
+	if (config.liveConsole) {
 		if (consoleFix != true) {
 			process.stdout.write("\rSpawned: " + spawnedCount + " | Total: " + totalScore + " | Average: " + avgScore + " | Highest: " + highestScore + " | Time: " + currentSeconds);
 		} else {
