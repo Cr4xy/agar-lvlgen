@@ -9,7 +9,7 @@ module.exports = {
 	],
 
 	name: "agar-lvlgen", // Name of the bots that will be playing. // Ce champ requiert le nom du bot qui se connectera.
-	reset: 0, // Minutes before server reset. (0 for none) // Le nombre de minutes avant que le serveur redemarre.
+	reset: 10, // Minutes before server reset. (0 for none) (10 by default // Le nombre de minutes avant que le serveur redemarre. (0 pour aucun) (10 par default)
 	showtoken: false, // Show the token of the Facebook account on start. // Afficher ou nom le token du compte facebook au demarrage.
 	liveConsole: true, // Show a live console instead of new lines. // Voir la console en mode reel pour les nouvelles lignes.
 
