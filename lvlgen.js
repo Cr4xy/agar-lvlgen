@@ -11,7 +11,7 @@ var agarClient = require("agario-client")
 	DefaultAi = new (require("./ai/default_ai.js")),
 	AposAi = new (require("./ai/apos_ai.js"));
 
-var VERSION = 0.94;
+var VERSION = 0.95;
 
 var currentSeconds = 0; // Starts at 0
 var accountIndex = 0; // Gives number to each token and account.
@@ -176,20 +176,27 @@ setInterval(function() {
 
 setInterval(function() {
 	currentSeconds++;
-}, 1000);
 
-if (config.reset > 0) {
-	setTimeout(function() {
-		process.exit();
-	}, config.reset * 1000 * 60);
-}
+    var totalScore = 0;
+    var spawnedCount = 0;
+
+    for (var i = 0; i < bots.length; i++) bots[i].spawned && (spawnedCount++, totalScore += bots[i].client.score);
+    var avgScore = parseInt((totalScore / Math.max(1, spawnedCount)).toFixed(0));
+
+    if (config.reset > 0) {
+        var inSeconds = config.reset * 60;
+        if (currentSeconds >= inSeconds && avgScore < 100) {
+            process.exit();
+        }
+    }
+}, 1000);
 
 setTimeout(function() {
 	console.log(" ");
 	// Live console developed by MastaCoder!
 	if (config.liveConsole == true) {
 		console.log("\u001B[33mLive Console: \u001B[0m");
-		console.log("------------------------------------------------------------------")
+		console.log("---------------------------------------------------------------------")
 	}
 }, config.statusDelay - 0.001);
 
@@ -203,6 +210,7 @@ setInterval(function() {
 	var highestScore = 0;
 	for (var i = 0; i < bots.length; i++) bots[i].spawned && (spawnedCount++, totalScore += bots[i].client.score, highestScore = Math.max(highestScore, bots[i].client.score));
 	var avgScore = parseInt((totalScore / Math.max(1, spawnedCount)).toFixed(0));
+
 	debugObj.connected = bots.length;
 	debugObj.spawned = spawnedCount;
 	debugObj.totalScore = totalScore;
