@@ -1,5 +1,5 @@
-// Made by Cr4xy - Helped by MastaCoder :)
-// https://www.youtube.com/channel/UC1CJCNc6rrtjJzxiqYN97aQ - Support Cr4xy's YouTube!
+// Made by Cr4xy - Helped by MastaCoder and traduction in french by W1LKC0 :) // Cree par Cr4xy - Aide par MastaCorder et traduction en francais par W1LKC0 :)
+// https://www.youtube.com/channel/UC1CJCNc6rrtjJzxiqYN97aQ - Support Cr4xy's YouTube! // Nous vous invitons a supporter le youtube de Cr4xy's
 
 var agarClient = require("agario-client")
 	config = require("./config.js"),
@@ -13,12 +13,12 @@ var agarClient = require("agario-client")
 
 var VERSION = 0.95;
 
-var currentSeconds = 0; // Starts at 0
-var accountIndex = 0; // Gives number to each token and account.
-var accountCount = 0; // Gives number of attempted accounts.
-var regionCounter = 0; // Give number to each region.
-var requestTries = 0; // Requests to get the server tokens.
-var consoleFix = false; // Adds spaces to remove extra numbers.
+var currentSeconds = 0; // Starts at 0 // Debute a 0
+var accountIndex = 0; // Gives number to each token and account. // Donne le nombre à chaque compte et token.
+var accountCount = 0; // Gives number of attempted accounts. // Donne le nombre de chaque essaie de compte.
+var regionCounter = 0; // Give number to each region. // Donne le nombre à chaque région.
+var requestTries = 0; // Requests to get the server tokens. // Demande à prendre le token du serveur.
+var consoleFix = false; // Adds spaces to remove extra numbers. // Ajoute de l'espace afin d'effacer les nombres en surplus.
 
 Array.prototype.contains = function(element) {
 	return this.indexOf(element) >= 0;
@@ -28,14 +28,14 @@ Array.prototype.remove = function(element) {
 	if (this.contains(element)) this.splice(this.indexOf(element), 1);
 }
 
-// Check if no region is enabled
+// Check if no region is enabled // Vérifie si aucune région est active
 !function() {
 	if (config.regions.length > 0) return;
 	console.log("No region enabled or found. oh well");
 	process.exit();
 }();
 
-// Check for updates
+// Check for updates // Vérifie pour les mises à jour.
 !function() {
 	require("https").get('https://raw.githubusercontent.com/Cr4xy/agar-lvlgen/master/version', function(res) {
 		res.on('data', function (bytes) {
@@ -107,7 +107,7 @@ function requestToken(c_user, datr, xs) {
 	});
 }
 
-// Get token & server, then start
+// Get token & server, then start // Prend le token et le serveur ensuite il demarre.
 !function getTokenAndServer() {
 	setTimeout(function() {
 		requestToken();
@@ -149,7 +149,7 @@ function start(server, key, token, acc) {
 				AposAi.setPlayer(myBalls);
 				AposAi.setMemoryCells(myClient.balls);
 				var destination = AposAi.mainLoop(myClient.balls);
-				//console.log(destination);
+				//console.log(destination); 
 				myClient.moveTo(destination[0], destination[1]);
 			}
 		}, 40);
@@ -193,7 +193,7 @@ setInterval(function() {
 
 setTimeout(function() {
 	console.log(" ");
-	// Live console developed by MastaCoder!
+	// Live console developed by MastaCoder! // Console en temps réel  développer par MastaCoder!
 	if (config.liveConsole == true) {
 		console.log("\u001B[33mLive Console: \u001B[0m");
 		console.log("---------------------------------------------------------------------")
@@ -218,7 +218,7 @@ setInterval(function() {
 	debugObj.highest = highestScore;
 	debugObj.time = currentSeconds;
 
-	// Live console developed by MastaCoder!
+	// Live console developed by MastaCoder! // Console en temps réel développer par MastaCoder!
 	if (config.liveConsole == true) {
 		if (consoleFix != true) {
 			process.stdout.write("\rSpawned: " + spawnedCount + " | Total: " + totalScore + " | Average: " + avgScore + " | Highest: " + highestScore + " | Time: " + currentSeconds);
