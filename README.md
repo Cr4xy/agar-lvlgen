@@ -4,7 +4,7 @@
 ###### How-To:
 1. Get your Facebook-Cookies, and put them into the config.
 2. Edit the config
-3. Run Start.bat (on windows) or run it through a terminal
+3. Run Start.bat (on windows) or run it through a terminal. (Make sure to have Node.js installed!)
 
 ## Config
 ###### How to edit your config:
