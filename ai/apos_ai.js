@@ -122,10 +122,11 @@ function AposAi() {
             return true;
         }
         return false;
-    },
-            this.canSplit = function (player1, player2) {
-                return this.compareSize(player1, player2, 2.8) && !this.compareSize(player1, player2, 20);
-            };
+    };
+    
+    this.canSplit = function (player1, player2) {
+        return this.compareSize(player1, player2, 2.8) && !this.compareSize(player1, player2, 20);
+    };
 
     this.isItMe = function (player, cell) {
         if (this.getMode() == ":teams") {
@@ -331,6 +332,7 @@ function AposAi() {
 
     this.getAngle = function (x1, y1, x2, y2) {
         //Handle vertical and horizontal lines.
+        //calculate angle opposite of enemy
 
         if (x1 == x2) {
             if (y1 < y2) {
@@ -341,7 +343,7 @@ function AposAi() {
             }
         }
 
-        return (Math.round(Math.atan2(-(y1 - y2), -(x1 - x2)) / Math.PI * 180 + 180));
+        return (Math.round(Math.atan2(y1 - y2, x1 - x2) / Math.PI * 180));
     };
 
     this.slope = function (x1, y1, x2, y2) {
@@ -510,50 +512,50 @@ function AposAi() {
         return [angle1, angle2];
     };
 
-/*
-    this.addWall = function(listToUse, blob) {
-        //var mapSizeX = Math.abs(f.getMapStartX - f.getMapEndX);
-        //var mapSizeY = Math.abs(f.getMapStartY - f.getMapEndY);
-        //var distanceFromWallX = mapSizeX/3;
-        //var distanceFromWallY = mapSizeY/3;
-        var distanceFromWallY = 2000;
-        var distanceFromWallX = 2000;
-        if (blob.x < getMapStartX() + distanceFromWallX) {
-            //LEFT
-            //console.log("Left");
-            listToUse.push([
-                [115, true],
-                [245, false], this.computeInexpensiveDistance(getMapStartX(), blob.y, blob.x, blob.y)
-            ]);
-        }
-        if (blob.y < getMapStartY() + distanceFromWallY) {
-            //TOP
-            //console.log("TOP");
-            listToUse.push([
-                [205, true],
-                [335, false], this.computeInexpensiveDistance(blob.x, getMapStartY(), blob.x, blob.y)
-            ]);
-        }
-        if (blob.x > getMapEndX() - distanceFromWallX) {
-            //RIGHT
-            //console.log("RIGHT");
-            listToUse.push([
-                [295, true],
-                [65, false], this.computeInexpensiveDistance(getMapEndX(), blob.y, blob.x, blob.y)
-            ]);
-        }
-        if (blob.y > getMapEndY() - distanceFromWallY) {
-            //BOTTOM
-            //console.log("BOTTOM");
-            listToUse.push([
-                [25, true],
-                [155, false], this.computeInexpensiveDistance(blob.x, getMapEndY(), blob.x, blob.y)
-            ]);
-        }
-        return listToUse;
-    };
-    */
-    
+    /*
+     this.addWall = function(listToUse, blob) {
+     //var mapSizeX = Math.abs(f.getMapStartX - f.getMapEndX);
+     //var mapSizeY = Math.abs(f.getMapStartY - f.getMapEndY);
+     //var distanceFromWallX = mapSizeX/3;
+     //var distanceFromWallY = mapSizeY/3;
+     var distanceFromWallY = 2000;
+     var distanceFromWallX = 2000;
+     if (blob.x < getMapStartX() + distanceFromWallX) {
+     //LEFT
+     //console.log("Left");
+     listToUse.push([
+     [115, true],
+     [245, false], this.computeInexpensiveDistance(getMapStartX(), blob.y, blob.x, blob.y)
+     ]);
+     }
+     if (blob.y < getMapStartY() + distanceFromWallY) {
+     //TOP
+     //console.log("TOP");
+     listToUse.push([
+     [205, true],
+     [335, false], this.computeInexpensiveDistance(blob.x, getMapStartY(), blob.x, blob.y)
+     ]);
+     }
+     if (blob.x > getMapEndX() - distanceFromWallX) {
+     //RIGHT
+     //console.log("RIGHT");
+     listToUse.push([
+     [295, true],
+     [65, false], this.computeInexpensiveDistance(getMapEndX(), blob.y, blob.x, blob.y)
+     ]);
+     }
+     if (blob.y > getMapEndY() - distanceFromWallY) {
+     //BOTTOM
+     //console.log("BOTTOM");
+     listToUse.push([
+     [25, true],
+     [155, false], this.computeInexpensiveDistance(blob.x, getMapEndY(), blob.x, blob.y)
+     ]);
+     }
+     return listToUse;
+     };
+     */
+
     //listToUse contains angles in the form of [angle, boolean].
     //boolean is true when the range is starting. False when it's ending.
     //range = [[angle1, true], [angle2, false]]
@@ -634,7 +636,7 @@ function AposAi() {
         return newListToUse;
     };
 
-    this.getAngleRange = function (blob1, blob2, index, radius) {
+    this.getAngleRange = function (blob1, blob2, radius) {
         var angleStuff = this.getEdgeLinesFromPoint(blob1, blob2, radius);
 
         var leftAngle = angleStuff[0];
@@ -725,8 +727,9 @@ function AposAi() {
                 //Loop through all the cells that were identified as threats.
                 for (var i = 0; i < allPossibleThreats.length; i++) {
                     allPossibleThreats[i].enemyDist = this.computeDistance(allPossibleThreats[i].x, allPossibleThreats[i].y, player[k].x, player[k].y, allPossibleThreats[i].size, player[k].size);
-                    var splitDangerDistance = allPossibleThreats[i].size + this.splitDistance + 150;
-                    var normalDangerDistance = allPossibleThreats[i].size + 150;
+                    //var splitDangerDistance = allPossibleThreats[i].size + this.splitDistance;
+                    var splitDangerDistance = this.splitDistance;
+                    var normalDangerDistance = 150;
                     var shiftDistance = player[k].size;
 
                     //console.log("Found distance.");
@@ -738,29 +741,22 @@ function AposAi() {
                             clusterAllFood.splice(j, 1);
                     }
 
-                    //console.log("Removed some food.");
-
-                    if (allPossibleThreats[i].danger && getLastUpdate() - allPossibleThreats[i].dangerTimeOut > 1000) {
-                        console.log("allPossibleThreats");
-                        allPossibleThreats[i].danger = false;
-                    }
-
-                    if ((enemyCanSplit && allPossibleThreats[i].enemyDist < splitDangerDistance) || (enemyCanSplit && allPossibleThreats[i].danger)) {
-
-                        badAngles.push(this.getAngleRange(player[k], allPossibleThreats[i], i, splitDangerDistance).concat(allPossibleThreats[i].enemyDist));
-
-                    } else if ((!enemyCanSplit && allPossibleThreats[i].enemyDist < normalDangerDistance) || (!enemyCanSplit && allPossibleThreats[i].danger)) {
-
-                        badAngles.push(this.getAngleRange(player[k], allPossibleThreats[i], i, normalDangerDistance).concat(allPossibleThreats[i].enemyDist));
+                    //can split on you, DANGER
+                    //TODO: all this is doing is calculating angles that you need to go into the opposite direction of... we need better logic than that.
+                    if ((enemyCanSplit && allPossibleThreats[i].enemyDist < splitDangerDistance)) {
+                        badAngles.push(this.getAngleRange(player[k], allPossibleThreats[i], splitDangerDistance).concat(allPossibleThreats[i].enemyDist));
+                    //can't split on you, but still DANGEROUS
+                    } else if ((!enemyCanSplit && allPossibleThreats[i].enemyDist < normalDangerDistance)) {
+                        badAngles.push(this.getAngleRange(player[k], allPossibleThreats[i], normalDangerDistance).concat(allPossibleThreats[i].enemyDist));
 
                     } else if (enemyCanSplit && allPossibleThreats[i].enemyDist < splitDangerDistance + shiftDistance) {
-                        var tempOb = this.getAngleRange(player[k], allPossibleThreats[i], i, splitDangerDistance + shiftDistance);
+                        var tempOb = this.getAngleRange(player[k], allPossibleThreats[i], splitDangerDistance + shiftDistance);
                         var angle1 = tempOb[0];
                         var angle2 = this.rangeToAngle(tempOb);
 
                         obstacleList.push([[angle1, true], [angle2, false]]);
                     } else if (!enemyCanSplit && allPossibleThreats[i].enemyDist < normalDangerDistance + shiftDistance) {
-                        var tempOb = this.getAngleRange(player[k], allPossibleThreats[i], i, normalDangerDistance + shiftDistance);
+                        var tempOb = this.getAngleRange(player[k], allPossibleThreats[i], normalDangerDistance + shiftDistance);
                         var angle1 = tempOb[0];
                         var angle2 = this.rangeToAngle(tempOb);
 
@@ -775,28 +771,17 @@ function AposAi() {
                 var stupidList = [];
 
                 for (var i = 0; i < allPossibleViruses.length; i++) {
-                    if (player[k].size < allPossibleViruses[i].size) {
-
-
-
-                    } else {
-
-
-                    }
-                }
-
-                for (var i = 0; i < allPossibleViruses.length; i++) {
                     var virusDistance = this.computeDistance(allPossibleViruses[i].x, allPossibleViruses[i].y, player[k].x, player[k].y);
                     if (player[k].size < allPossibleViruses[i].size) {
                         if (virusDistance < (allPossibleViruses[i].size * 2)) {
-                            var tempOb = this.getAngleRange(player[k], allPossibleViruses[i], i, allPossibleViruses[i].size + 10);
+                            var tempOb = this.getAngleRange(player[k], allPossibleViruses[i], allPossibleViruses[i].size + 10);
                             var angle1 = tempOb[0];
                             var angle2 = this.rangeToAngle(tempOb);
                             obstacleList.push([[angle1, true], [angle2, false]]);
                         }
                     } else {
                         if (virusDistance < (player[k].size * 2)) {
-                            var tempOb = this.getAngleRange(player[k], allPossibleViruses[i], i, player[k].size + 50);
+                            var tempOb = this.getAngleRange(player[k], allPossibleViruses[i], player[k].size + 50);
                             var angle1 = tempOb[0];
                             var angle2 = this.rangeToAngle(tempOb);
                             obstacleList.push([[angle1, true], [angle2, false]]);
@@ -908,7 +893,7 @@ function AposAi() {
                             bestFoodI = i;
                         }
                     }
-                    
+
                     //console.log("Best Value: " + clusterAllFood[bestFoodI][2]);
                     var distance = this.computeDistance(player[k].x, player[k].y, clusterAllFood[bestFoodI][0], clusterAllFood[bestFoodI][1]);
                     var shiftedAngle = this.shiftAngle(obstacleAngles, this.getAngle(clusterAllFood[bestFoodI][0], clusterAllFood[bestFoodI][1], player[k].x, player[k].y), [0, 360]);
