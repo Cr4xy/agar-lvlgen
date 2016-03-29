@@ -728,7 +728,7 @@ function AposAi() {
                 for (var i = 0; i < allPossibleThreats.length; i++) {
                     allPossibleThreats[i].enemyDist = this.computeDistance(allPossibleThreats[i].x, allPossibleThreats[i].y, player[k].x, player[k].y, allPossibleThreats[i].size, player[k].size);
                     //var splitDangerDistance = allPossibleThreats[i].size + this.splitDistance;
-                    var splitDangerDistance = this.splitDistance;
+                    var splitDangerDistance = 200;//this.splitDistance;
                     var normalDangerDistance = 150;
                     var shiftDistance = player[k].size;
 
@@ -740,7 +740,6 @@ function AposAi() {
                         if (this.computeDistance(allPossibleThreats[i].x, allPossibleThreats[i].y, clusterAllFood[j][0], clusterAllFood[j][1]) < secureDistance + shiftDistance)
                             clusterAllFood.splice(j, 1);
                     }
-
                     //can split on you, DANGER
                     //TODO: all this is doing is calculating angles that you need to go into the opposite direction of... we need better logic than that.
                     if ((enemyCanSplit && allPossibleThreats[i].enemyDist < splitDangerDistance)) {
