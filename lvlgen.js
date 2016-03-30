@@ -13,7 +13,7 @@ config = require("./config.js"),
 
 var fs = require('fs');
 
-var VERSION = 0.96;
+var VERSION = 0.97;
 
 var currentSeconds = 0; // Starts at 0
 var accountIndex = 0; // Gives number to each token and account.
