@@ -13,7 +13,7 @@ config = require("./config.js"),
 
 var fs = require('fs');
 
-var VERSION = 0.97;
+var VERSION = 0.971;
 
 var currentSeconds = 0; // Starts at 0
 var accountIndex = 0; // Gives number to each token and account.
@@ -64,18 +64,24 @@ function getCurrentDate() {
             if (!isNaN(fetched_version) && isFinite(fetched_version)) {
                 if (VERSION < fetched_version) {
                     console.log("Running version: " + VERSION + " (New version " + fetched_version + " found, download off agar-lvlgen Github repo)");
+                    console.log("https://github.com/Cr4xy/agar-lvlgen");
                 } else {
                     console.log("Running version: " + VERSION + " (Latest)");
+                    
+                    console.log("\u001B[37mPlease DO NOT use \u001B[33magar-lvlgen\u001B[0m at the moment due the risk of getting \u001B[31mbanned\u001B[0m. :(");
+                    setTimeout(process.exit, 60000);
                 }
             } else {
                 console.log("Running version: " + VERSION + " (Failed to fetch)");
             }
-
-            console.log("Will reset in: " + config.reset + " minutes")
+            
+            //console.log("Will reset in: " + config.reset + " minutes")
             console.log("\n\u001B[31m########################\u001B[0m\n");
         });
     });
 }();
+
+return;
 
 function getRegion() {
     regionCounter++;
