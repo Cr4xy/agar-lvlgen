@@ -1,0 +1,3 @@
+[submodule "agario-devtools"]
+	path = agario-devtools
+	url = https://github.com/pulviscriptor/agario-devtools.git
