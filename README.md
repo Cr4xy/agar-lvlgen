@@ -1,3 +1,5 @@
+#### PLEASE DO NOT USE AGAR-LVLGEN FOR THE TIME BEING AS YOU **WILL** GET BANNED!
+
 # agar-lvlgen
 
 ## Tutorial
